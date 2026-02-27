@@ -37,6 +37,7 @@ Extension Chrome/Edge Manifest V3 pour corriger l'orthographe d'un texte selecti
 3. Choisis le mode:
    - `API OpenAI (automatique)` pour correction directe.
    - `Login ChatGPT (manuel)` pour travailler sans cle API (copier/coller via chatgpt.com).
+   - En mode login, utilise le bouton `Se connecter a ChatGPT` dans le popup.
 4. Sur une page web, selectionne du texte dans un `input`, `textarea` ou `contenteditable`.
 5. Clic droit `Corriger l'orthographe (IA)` (ou raccourci `Alt+Shift+C`).
 6. Dans l'overlay, choisis `Remplacer`, `Copier` ou `Annuler`.
@@ -48,6 +49,7 @@ Extension Chrome/Edge Manifest V3 pour corriger l'orthographe d'un texte selecti
 - Le remplacement dans certains editeurs riches complexes (Google Docs natif, certains iframes sandboxes) peut etre partiel selon leurs protections DOM.
 - Cle API stockee en `chrome.storage.sync` (non chiffree applicativement).
 - En mode `Login ChatGPT`, la correction est manuelle (pas de retour automatique depuis chatgpt.com pour des raisons de securite des sessions web).
+- L'extension n'accede pas a ta session ChatGPT: la connexion se fait directement sur chatgpt.com dans ton navigateur.
 
 ## TODO V2
 

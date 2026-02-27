@@ -31,10 +31,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
     return;
   }
 
-  chrome.tabs.sendMessage(tab.id, {
-    type: "TW_TRIGGER_CORRECTION",
-    source: "context_menu"
-  });
+  sendTriggerMessage(tab.id, "context_menu");
 });
 
 chrome.commands.onCommand.addListener(async (command) => {
@@ -47,10 +44,7 @@ chrome.commands.onCommand.addListener(async (command) => {
     return;
   }
 
-  chrome.tabs.sendMessage(tab.id, {
-    type: "TW_TRIGGER_CORRECTION",
-    source: "shortcut"
-  });
+  sendTriggerMessage(tab.id, "shortcut");
 });
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
@@ -221,4 +215,28 @@ class HttpError extends Error {
     this.name = "HttpError";
     this.status = status;
   }
+}
+
+function sendTriggerMessage(tabId, source) {
+  chrome.tabs
+    .sendMessage(tabId, {
+      type: "TW_TRIGGER_CORRECTION",
+      source
+    })
+    .catch((error) => {
+      if (error?.message?.includes("Receiving end does not exist")) {
+        showReloadPageNotification();
+        return;
+      }
+      console.error("TypeWise sendMessage error:", error);
+    });
+}
+
+function showReloadPageNotification() {
+  chrome.notifications.create({
+    type: "basic",
+    iconUrl: "icons/icon128.png",
+    title: "TypeWise Orthographe IA",
+    message: "Impossible d'acceder a cette page. Recharge l'onglet puis reessaie."
+  });
 }

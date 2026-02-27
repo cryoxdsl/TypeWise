@@ -12,6 +12,8 @@ const saveBtn = document.getElementById("saveBtn");
 const statusEl = document.getElementById("status");
 const modeApi = document.getElementById("modeApi");
 const modeWeb = document.getElementById("modeWeb");
+const webModeHelp = document.getElementById("webModeHelp");
+const openChatGptBtn = document.getElementById("openChatGptBtn");
 
 init();
 
@@ -23,6 +25,7 @@ async function init() {
   const authMode = values.authMode || "api";
   modeApi.checked = authMode === "api";
   modeWeb.checked = authMode === "chatgpt_web";
+  updateModeUI(authMode);
 }
 
 saveBtn.addEventListener("click", async () => {
@@ -32,9 +35,24 @@ saveBtn.addEventListener("click", async () => {
   const authMode = modeWeb.checked ? "chatgpt_web" : "api";
 
   await chrome.storage.sync.set({ apiKey, language, enabled, authMode });
+  updateModeUI(authMode);
 
   statusEl.textContent = "Configuration enregistree.";
   setTimeout(() => {
     statusEl.textContent = "";
   }, 2000);
 });
+
+modeApi.addEventListener("change", () => updateModeUI("api"));
+modeWeb.addEventListener("change", () => updateModeUI("chatgpt_web"));
+
+openChatGptBtn.addEventListener("click", async () => {
+  await chrome.runtime.sendMessage({ type: "TW_OPEN_CHATGPT" });
+});
+
+function updateModeUI(authMode) {
+  const isWebMode = authMode === "chatgpt_web";
+  webModeHelp.classList.toggle("hidden", !isWebMode);
+  apiKeyInput.disabled = isWebMode;
+  apiKeyInput.placeholder = isWebMode ? "Non utilise en mode login ChatGPT" : "sk-...";
+}
