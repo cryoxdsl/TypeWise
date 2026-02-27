@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TypeWise AI</title>
+    <style>
+      body { margin: 0; font-family: "Segoe UI", sans-serif; background: #f4f7fb; color: #102a43; }
+      .box { width: 320px; padding: 12px; }
+      h1 { margin: 0 0 10px; font-size: 16px; }
+      .row { margin-bottom: 8px; font-size: 12px; }
+      label { display: block; margin-bottom: 4px; font-weight: 600; }
+      select, input, button { width: 100%; box-sizing: border-box; border: 1px solid #bcccdc; border-radius: 8px; padding: 8px; font-size: 12px; }
+      .toggle { display: flex; align-items: center; gap: 8px; }
+      .toggle input { width: auto; }
+      button { cursor: pointer; background: #0f6ad8; color: #fff; border-color: #0f6ad8; }
+      .muted { color: #486581; }
+      .line { display: flex; justify-content: space-between; }
+    </style>
+  </head>
+  <body>
+    <div class="box">
+      <h1>TypeWise AI</h1>
+
+      <div class="row toggle">
+        <input id="enabled" type="checkbox" />
+        <label for="enabled">Activer l'extension</label>
+      </div>
+
+      <div class="row">
+        <label for="mode">Mode par defaut</label>
+        <select id="mode"></select>
+      </div>
+
+      <div class="row line">
+        <span>Plan</span><strong id="plan">-</strong>
+      </div>
+      <div class="row line">
+        <span>Quota</span><strong id="quota">-</strong>
+      </div>
+
+      <div class="row">
+        <button id="refreshBtn" type="button">Actualiser mon compte</button>
+      </div>
+      <div class="row">
+        <button id="openOptionsBtn" type="button">Ouvrir les options</button>
+      </div>
+
+      <p id="status" class="row muted"></p>
+    </div>
+    <script src="../lib/apiClient.js"></script>
+    <script src="popup.js"></script>
+  </body>
+</html>

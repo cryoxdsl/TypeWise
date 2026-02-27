@@ -1,0 +1,54 @@
+{
+  "manifest_version": 3,
+  "name": "TypeWise AI Corrector",
+  "description": "Correction et amelioration de texte via backend SaaS proxy (freemium).",
+  "version": "3.0.0",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "permissions": ["storage", "contextMenus", "activeTab", "notifications"],
+  "host_permissions": [
+    "http://localhost:8787/*",
+    "https://localhost:8787/*"
+  ],
+  "background": {
+    "service_worker": "background/service_worker.js"
+  },
+  "action": {
+    "default_title": "TypeWise AI",
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png"
+    }
+  },
+  "options_page": "options/options.html",
+  "commands": {
+    "correct_with_ai": {
+      "suggested_key": {
+        "default": "Alt+Shift+C",
+        "mac": "Command+Shift+C"
+      },
+      "description": "Corriger avec IA"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": [
+        "lib/apiClient.js",
+        "lib/diff.js",
+        "content/overlay.js",
+        "content/content_script.js"
+      ],
+      "css": ["content/overlay.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  }
+}

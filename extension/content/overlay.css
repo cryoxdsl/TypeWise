@@ -1,0 +1,112 @@
+.tw3-overlay {
+  position: absolute;
+  z-index: 2147483647;
+  width: min(520px, calc(100vw - 16px));
+  background: #ffffff;
+  border: 1px solid #d6dee7;
+  border-radius: 12px;
+  box-shadow: 0 18px 50px rgba(2, 33, 71, 0.18);
+  color: #102a43;
+  padding: 12px;
+  font-family: "Segoe UI", -apple-system, sans-serif;
+}
+
+.tw3-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.tw3-header h3 {
+  margin: 0;
+  font-size: 14px;
+}
+
+.tw3-mode {
+  border: 1px solid #bcccdc;
+  border-radius: 8px;
+  font-size: 12px;
+  padding: 6px;
+}
+
+.tw3-info {
+  margin-top: 8px;
+  font-size: 12px;
+  display: flex;
+  gap: 10px;
+  color: #486581;
+}
+
+.tw3-status {
+  margin: 8px 0;
+  font-size: 12px;
+  color: #243b53;
+}
+
+.tw3-diff {
+  margin: 8px 0;
+  max-height: 120px;
+  overflow: auto;
+  border: 1px solid #e4ebf2;
+  border-radius: 8px;
+  background: #f8fbff;
+  padding: 8px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-size: 12px;
+}
+
+.tw3-same {
+  color: #102a43;
+}
+
+.tw3-add {
+  background: #d1fae5;
+  color: #064e3b;
+}
+
+.tw3-remove {
+  text-decoration: line-through;
+  background: #ffe4e6;
+  color: #7f1d1d;
+}
+
+.tw3-change {
+  background: #dbeafe;
+  color: #1e3a8a;
+}
+
+.tw3-corrected {
+  width: 100%;
+  min-height: 80px;
+  box-sizing: border-box;
+  border: 1px solid #bcccdc;
+  border-radius: 8px;
+  padding: 8px;
+  font: inherit;
+  font-size: 12px;
+}
+
+.tw3-actions {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tw3-btn {
+  border: 1px solid #bcccdc;
+  background: #ffffff;
+  color: #102a43;
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.tw3-primary {
+  background: #0f6ad8;
+  border-color: #0f6ad8;
+  color: #ffffff;
+}

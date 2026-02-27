@@ -1,74 +1,223 @@
-# TypeWise Orthographe IA (MVP)
+# TypeWise V3 - Extension IA SaaS-ready (Freemium / Multi-tenant)
 
-Extension Chrome/Edge Manifest V3 pour corriger l'orthographe d'un texte selectionne dans des champs editables via l'API OpenAI.
+Monorepo local avec:
+- `extension/` Chrome/Edge Manifest V3
+- `server/` backend Node.js Express (proxy OpenAI + auth + quotas)
+
+Objectif: corriger/améliorer du texte sélectionné dans des champs éditables via un backend proxy sécurisé, sans clé OpenAI côté extension.
 
 ## Arborescence
 
-- `manifest.json`
-- `service_worker.js`
-- `content_script.js`
-- `ui/overlay.css`
-- `popup.html`
-- `popup.js`
-- `popup.css`
-- `icons/icon16.png`
-- `icons/icon32.png`
-- `icons/icon48.png`
-- `icons/icon128.png`
+```text
+/extension
+  manifest.json
+  background/service_worker.js
+  content/content_script.js
+  content/overlay.js
+  content/overlay.css
+  lib/diff.js
+  lib/apiClient.js
+  popup/popup.html
+  popup/popup.js
+  options/options.html
+  options/options.js
+  icons/
+/server
+  package.json
+  src/index.js
+  src/auth.js
+  src/quotas.js
+  src/openaiProxy.js
+  src/logger.js
+  .env.example
+README.md
+```
 
-## Installation (Load unpacked)
+## Fonctionnalités V3 implémentées
 
-### Chrome
-1. Ouvre `chrome://extensions`.
-2. Active `Developer mode`.
-3. Clique `Load unpacked`.
-4. Selectionne le dossier `/mnt/c/Users/Paul/Sources/TypeWise`.
+- Modes: `MODE_ORTHO`, `MODE_GRAMMAR`, `MODE_REWRITE_LIGHT`, `MODE_REWRITE_PRO`, `MODE_CLARITY`, `MODE_TONE`
+- Déclenchement: menu contextuel + raccourci `Alt+Shift+C`
+- Overlay: sélecteur mode, score confiance, diff mot-à-mot, actions `Corriger / Remplacer / Copier / Annuler`, quota restant
+- Auth SaaS: dev login (`/auth/dev-login`) avec token JWT stocké en `chrome.storage.local`
+- Plans/quotas:
+  - FREE: 20/jour
+  - PREMIUM: 500/jour
+  - ENTERPRISE: illimité
+- Enforcement quotas côté serveur (source de vérité)
+- Backend proxy OpenAI (clé côté serveur uniquement)
+- Logs privacy-first (sans texte utilisateur)
+- Historique local (extension): export JSON + suppression
+- Stubs: Stripe webhook, SSO enterprise config
 
-### Edge
-1. Ouvre `edge://extensions`.
-2. Active `Developer mode`.
-3. Clique `Load unpacked`.
-4. Selectionne le dossier `/mnt/c/Users/Paul/Sources/TypeWise`.
+## Setup serveur (local)
 
-## Utilisation
+Prerequis: Node.js 18+
 
-1. Clique l'icone de l'extension.
-2. Renseigne la cle API OpenAI, la langue (FR par defaut) et active l'extension.
-3. Choisis le mode:
-   - `API OpenAI (automatique)` pour correction directe.
-   - `Login ChatGPT (manuel)` pour travailler sans cle API (copier/coller via chatgpt.com).
-   - En mode login, utilise le bouton `Se connecter a ChatGPT` dans le popup.
-4. Sur une page web, selectionne du texte dans un `input`, `textarea` ou `contenteditable`.
-5. Clic droit `Corriger l'orthographe (IA)` (ou raccourci `Alt+Shift+C`).
-6. Dans l'overlay, choisis `Remplacer`, `Copier` ou `Annuler`.
+1. Installer les dépendances:
 
-## Limitations MVP
+```bash
+cd server
+npm install
+```
 
-- Orthographe uniquement (pas de reformulation, pas de style).
-- Maximum 2000 caracteres par requete.
-- Le remplacement dans certains editeurs riches complexes (Google Docs natif, certains iframes sandboxes) peut etre partiel selon leurs protections DOM.
-- Cle API stockee en `chrome.storage.sync` (non chiffree applicativement).
-- En mode `Login ChatGPT`, la correction est manuelle (pas de retour automatique depuis chatgpt.com pour des raisons de securite des sessions web).
-- L'extension n'accede pas a ta session ChatGPT: la connexion se fait directement sur chatgpt.com dans ton navigateur.
+2. Configurer l'environnement:
 
-## TODO V2
+```bash
+cp .env.example .env
+```
 
-- Correction grammaire/syntaxe/reformulation par mode.
-- Multi-langue plus riche + auto-detection.
-- Mode "corriger tout le champ".
-- Cache local de corrections.
-- Support plus robuste des editeurs riches (Google Docs, Notion, etc.).
-- Option modele OpenAI configurable.
+3. (Optionnel) Mettre `OPENAI_API_KEY` dans `.env`.
+- Si absent, le serveur utilise un fallback local de correction (stub) pour faciliter les tests.
 
-## Plan de tests manuels rapide
+4. Lancer le serveur:
 
-1. `textarea` simple : selection partielle -> menu -> correction -> `Remplacer`.
-2. `input type="text"` : selection -> correction -> `Copier`.
-3. `contenteditable` simple : selection -> correction -> `Remplacer`.
-4. Gmail (compose) : selection d'un mot fautif -> correction.
-5. Google Docs : tester et verifier comportement (selon limitations).
-6. Cas sans selection : verifier message "Selectionne du texte".
-7. Cas extension desactivee : verifier message dedie.
-8. Cas cle API invalide : verifier erreur lisible 401.
-9. Cas texte > 2000 caracteres : verifier blocage UX.
-10. Mode `Login ChatGPT` : verifier le flux `Copier le prompt` -> `Ouvrir ChatGPT` -> coller la correction -> `Remplacer`.
+```bash
+npm run dev
+```
+
+Serveur sur `http://localhost:8787`.
+
+## Setup extension (Chrome / Edge)
+
+1. Ouvrir:
+- Chrome: `chrome://extensions`
+- Edge: `edge://extensions`
+
+2. Activer `Developer mode`.
+3. `Load unpacked`.
+4. Sélectionner le dossier `.../TypeWise/extension`.
+
+## Parcours E2E rapide
+
+1. Lancer le serveur (`npm run dev`).
+2. Charger l'extension unpacked.
+3. Ouvrir `Options` de l'extension.
+4. Faire `Dev login` avec un email:
+- FREE: `alice@test.com`
+- PREMIUM: `alice+premium@test.com`
+- ENTERPRISE: `alice+enterprise@test.com`
+
+5. Cliquer `Charger /me` et vérifier plan/quota.
+6. Sur une page web avec `textarea` ou `contenteditable`:
+- sélectionner du texte
+- clic droit `Corriger avec IA`
+- vérifier overlay: correction, diff, score, quota
+- tester `Remplacer`
+
+## API backend
+
+### `POST /auth/dev-login`
+Input:
+
+```json
+{
+  "email": "alice@test.com",
+  "orgId": "org_demo",
+  "workspaceId": "ws_default"
+}
+```
+
+Output:
+
+```json
+{
+  "accessToken": "...",
+  "refreshToken": "...",
+  "tokenType": "Bearer",
+  "expiresAt": 1710000000000,
+  "plan": "FREE"
+}
+```
+
+### `GET /me` (Bearer)
+Output:
+
+```json
+{
+  "userId": "...",
+  "email": "alice@test.com",
+  "plan": "FREE",
+  "orgId": "org_demo",
+  "workspaceId": "ws_default",
+  "quotaRemaining": 19,
+  "features": {
+    "modes": ["MODE_ORTHO", "MODE_GRAMMAR", "MODE_REWRITE_LIGHT"],
+    "tone": false,
+    "localHistoryOnly": true
+  }
+}
+```
+
+### `POST /correct` (Bearer)
+Input:
+
+```json
+{
+  "mode": "MODE_ORTHO",
+  "language": "fr",
+  "text": "ton texte",
+  "hostname": "example.com"
+}
+```
+
+Output:
+
+```json
+{
+  "corrected_text": "...",
+  "confidence_score": 0.92,
+  "changes_explained": [
+    { "original": "...", "corrected": "...", "type": "orthographe" }
+  ],
+  "quota_remaining": 19
+}
+```
+
+### `POST /billing/webhook`
+Stub Stripe.
+
+### `GET /health`
+Healthcheck.
+
+## Notes sécurité / confidentialité
+
+- Pas de clé OpenAI dans l'extension.
+- JWT stocké en `chrome.storage.local` (pas `sync`).
+- Côté serveur, pas de log de texte utilisateur.
+- Logs: métriques agrégées (`textLength`, `mode`, `latency`, `status`, `orgHash`).
+- Mode confidentialité renforcée côté client (`privacyEnhanced`): n'envoie pas `hostname`.
+- Taille max texte: 3000 caractères.
+- Rate limit en mémoire (IP + user-hint / minute).
+- CSP extension stricte (`script-src 'self'`).
+
+## Limites connues
+
+- Stockage quotas/rate-limit en mémoire (pas persistant).
+- Pas de vraie base de données multi-tenant.
+- Pas de vrai magic link/OAuth (dev login uniquement).
+- Refresh token endpoint minimal.
+- Diff LCS simple (pas optimal sur très longs textes).
+- Bouton discret près des champs = stub config uniquement.
+- Webhook Stripe et SSO = stubs.
+
+## Roadmap TODO
+
+- Stripe réel (checkout + portal + webhooks signés)
+- Magic link / OAuth (Google/Microsoft)
+- Admin org/workspace + policies détaillées
+- Historique synchronisé chiffré (E2E encryption)
+- A/B testing prompts et modèles
+- Rate-limit distribué + stockage persistant (Redis)
+- Audit logs entreprise anonymisés avancés
+
+## Guide de tests rapides
+
+1. **Auth**: Options -> Dev login -> `/me` OK.
+2. **Quota**: en plan FREE, faire 20 corrections puis vérifier erreur quota (`429`).
+3. **Premium mode gate**: en FREE, tester `MODE_REWRITE_PRO` -> erreur plan (`402`).
+4. **Overlay**: vérifier mode selector, diff, score, quota, boutons action.
+5. **No selection**: déclencher sans sélection -> notification claire.
+6. **401**: supprimer token local puis corriger -> demande reconnexion.
+7. **Timeout**: simuler backend down -> message propre côté overlay.
+8. **Privacy**: cocher mode confidentialité renforcée -> pas de hostname envoyé.
+9. **History**: corrections enregistrées en local, export JSON et suppression OK.
