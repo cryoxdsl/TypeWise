@@ -5,7 +5,8 @@ const OPENAI_TIMEOUT_MS = 15000;
 const DEFAULT_SETTINGS = {
   apiKey: "",
   language: "fr",
-  enabled: true
+  enabled: true,
+  authMode: "api"
 };
 
 chrome.runtime.onInstalled.addListener(async () => {
@@ -20,7 +21,8 @@ chrome.runtime.onInstalled.addListener(async () => {
   await chrome.storage.sync.set({
     apiKey: existing.apiKey || "",
     language: existing.language || "fr",
-    enabled: typeof existing.enabled === "boolean" ? existing.enabled : true
+    enabled: typeof existing.enabled === "boolean" ? existing.enabled : true,
+    authMode: existing.authMode || "api"
   });
 });
 
@@ -52,6 +54,12 @@ chrome.commands.onCommand.addListener(async (command) => {
 });
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+  if (message?.type === "TW_OPEN_CHATGPT") {
+    chrome.tabs.create({ url: "https://chatgpt.com/" });
+    sendResponse({ ok: true });
+    return false;
+  }
+
   if (message?.type !== "TW_GET_CORRECTION") {
     return false;
   }
@@ -81,6 +89,10 @@ async function correctSpelling(payload) {
   const settings = await chrome.storage.sync.get(DEFAULT_SETTINGS);
   if (!settings.enabled) {
     throw new Error("EXTENSION_DISABLED");
+  }
+
+  if (settings.authMode === "chatgpt_web") {
+    throw new Error("WEB_LOGIN_MODE");
   }
 
   if (!settings.apiKey) {
@@ -182,6 +194,8 @@ function normalizeError(error) {
       return "Texte trop long (maximum 2000 caracteres).";
     case "MISSING_API_KEY":
       return "Ajoute une cle API OpenAI dans le popup de l'extension.";
+    case "WEB_LOGIN_MODE":
+      return "Mode login ChatGPT actif: utilise le flux manuel dans l'overlay.";
     case "EXTENSION_DISABLED":
       return "L'extension est desactivee dans le popup.";
     case "TIMEOUT":

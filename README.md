@@ -34,9 +34,12 @@ Extension Chrome/Edge Manifest V3 pour corriger l'orthographe d'un texte selecti
 
 1. Clique l'icone de l'extension.
 2. Renseigne la cle API OpenAI, la langue (FR par defaut) et active l'extension.
-3. Sur une page web, selectionne du texte dans un `input`, `textarea` ou `contenteditable`.
-4. Clic droit `Corriger l'orthographe (IA)` (ou raccourci `Alt+Shift+C`).
-5. Dans l'overlay, choisis `Remplacer`, `Copier` ou `Annuler`.
+3. Choisis le mode:
+   - `API OpenAI (automatique)` pour correction directe.
+   - `Login ChatGPT (manuel)` pour travailler sans cle API (copier/coller via chatgpt.com).
+4. Sur une page web, selectionne du texte dans un `input`, `textarea` ou `contenteditable`.
+5. Clic droit `Corriger l'orthographe (IA)` (ou raccourci `Alt+Shift+C`).
+6. Dans l'overlay, choisis `Remplacer`, `Copier` ou `Annuler`.
 
 ## Limitations MVP
 
@@ -44,6 +47,7 @@ Extension Chrome/Edge Manifest V3 pour corriger l'orthographe d'un texte selecti
 - Maximum 2000 caracteres par requete.
 - Le remplacement dans certains editeurs riches complexes (Google Docs natif, certains iframes sandboxes) peut etre partiel selon leurs protections DOM.
 - Cle API stockee en `chrome.storage.sync` (non chiffree applicativement).
+- En mode `Login ChatGPT`, la correction est manuelle (pas de retour automatique depuis chatgpt.com pour des raisons de securite des sessions web).
 
 ## TODO V2
 
@@ -65,3 +69,4 @@ Extension Chrome/Edge Manifest V3 pour corriger l'orthographe d'un texte selecti
 7. Cas extension desactivee : verifier message dedie.
 8. Cas cle API invalide : verifier erreur lisible 401.
 9. Cas texte > 2000 caracteres : verifier blocage UX.
+10. Mode `Login ChatGPT` : verifier le flux `Copier le prompt` -> `Ouvrir ChatGPT` -> coller la correction -> `Remplacer`.

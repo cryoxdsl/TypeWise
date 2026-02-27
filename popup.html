@@ -15,6 +15,18 @@
         <input id="apiKey" type="password" autocomplete="off" placeholder="sk-..." />
       </label>
 
+      <fieldset class="field mode-group">
+        <legend>Mode de correction</legend>
+        <label class="mode-option">
+          <input id="modeApi" type="radio" name="authMode" value="api" />
+          <span>API OpenAI (automatique)</span>
+        </label>
+        <label class="mode-option">
+          <input id="modeWeb" type="radio" name="authMode" value="chatgpt_web" />
+          <span>Login ChatGPT (manuel, sans clé API)</span>
+        </label>
+      </fieldset>
+
       <label class="field">
         <span>Langue cible</span>
         <select id="language">

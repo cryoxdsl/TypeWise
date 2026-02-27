@@ -49,6 +49,17 @@
   word-break: break-word;
 }
 
+.tw-overlay-input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #bcccdc;
+  border-radius: 8px;
+  padding: 8px;
+  min-height: 80px;
+  resize: vertical;
+  font: inherit;
+}
+
 .tw-overlay-link {
   margin: 8px 0;
   border: 0;

@@ -10,7 +10,7 @@ chrome.runtime.onMessage.addListener((message) => {
 });
 
 async function triggerCorrection() {
-  const settings = await chrome.storage.sync.get({ enabled: true, language: "fr" });
+  const settings = await chrome.storage.sync.get({ enabled: true, language: "fr", authMode: "api" });
   if (!settings.enabled) {
     showMessageOverlay("Extension desactivee. Active-la dans le popup.", "error");
     return;
@@ -33,6 +33,15 @@ async function triggerCorrection() {
   }
 
   pendingReplacement = selection;
+  if (settings.authMode === "chatgpt_web") {
+    showManualLoginOverlay({
+      text: selection.text,
+      language: settings.language || "fr",
+      rect: selection.rect
+    });
+    return;
+  }
+
   showLoadingOverlay(selection.rect);
 
   let response;
@@ -206,6 +215,79 @@ function showResultOverlay({ before, after, rect }) {
     ],
     anchorRect: rect
   });
+}
+
+function showManualLoginOverlay({ text, language, rect }) {
+  const body = document.createElement("div");
+  const info = document.createElement("p");
+  info.className = "tw-overlay-disclaimer";
+  info.textContent =
+    "Mode sans API: connecte-toi a ChatGPT, colle le prompt, puis colle ici la reponse corrigee.";
+
+  const promptLabel = document.createElement("p");
+  promptLabel.className = "tw-overlay-label";
+  promptLabel.textContent = "Prompt a envoyer";
+
+  const prompt = buildManualPrompt(text, language);
+  const promptBox = document.createElement("pre");
+  promptBox.className = "tw-overlay-text";
+  promptBox.textContent = prompt;
+
+  const resultLabel = document.createElement("p");
+  resultLabel.className = "tw-overlay-label";
+  resultLabel.textContent = "Colle la correction retournee par ChatGPT";
+
+  const resultInput = document.createElement("textarea");
+  resultInput.className = "tw-overlay-input";
+  resultInput.placeholder = "Texte corrige...";
+
+  body.append(info, promptLabel, promptBox, resultLabel, resultInput);
+
+  renderOverlay({
+    title: "Correction via login ChatGPT",
+    body,
+    actions: [
+      {
+        label: "Copier le prompt",
+        onClick: async () => {
+          const ok = await copyToClipboard(prompt);
+          showMessageOverlay(ok ? "Prompt copie." : "Impossible de copier.", ok ? "info" : "error", rect);
+        }
+      },
+      {
+        label: "Ouvrir ChatGPT",
+        onClick: () => {
+          chrome.runtime.sendMessage({ type: "TW_OPEN_CHATGPT" });
+        }
+      },
+      {
+        label: "Remplacer",
+        primary: true,
+        onClick: () => {
+          const corrected = resultInput.value.trim();
+          if (!corrected) {
+            showMessageOverlay("Colle d'abord la correction.", "error", rect);
+            return;
+          }
+          applyReplacement(corrected);
+          closeOverlay();
+        }
+      },
+      { label: "Annuler", onClick: closeOverlay }
+    ],
+    anchorRect: rect
+  });
+}
+
+function buildManualPrompt(text, language) {
+  return [
+    "Tu es un correcteur orthographique.",
+    "Corrige uniquement l'orthographe, sans modifier le style, la grammaire (sauf si necessaire pour l'orthographe), ni reformuler.",
+    "Rends uniquement le texte corrige, sans explications.",
+    `Langue cible: ${language || "fr"}`,
+    "Texte:",
+    text
+  ].join("\n");
 }
 
 function renderOverlay({ title, body, actions, anchorRect, kind }) {
