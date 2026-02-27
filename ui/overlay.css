@@ -1,0 +1,87 @@
+.tw-overlay-wrapper {
+  position: absolute;
+  z-index: 2147483647;
+  width: min(420px, calc(100vw - 20px));
+  background: #ffffff;
+  border: 1px solid #d9e2ec;
+  border-radius: 12px;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.18);
+  color: #102a43;
+  padding: 12px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.tw-overlay-wrapper[data-kind="error"] {
+  border-color: #ef4444;
+}
+
+.tw-overlay-title {
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.tw-overlay-body {
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.tw-overlay-label {
+  margin: 8px 0 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.tw-overlay-disclaimer {
+  margin: 0 0 8px;
+  font-size: 11px;
+  color: #486581;
+}
+
+.tw-overlay-text {
+  margin: 0;
+  padding: 8px;
+  border-radius: 8px;
+  background: #f0f4f8;
+  max-height: 160px;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.tw-overlay-link {
+  margin: 8px 0;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: #1769aa;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.tw-overlay-actions {
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tw-btn {
+  border: 1px solid #bcccdc;
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-size: 12px;
+  cursor: pointer;
+  background: #fff;
+  color: #102a43;
+}
+
+.tw-btn-primary {
+  border-color: #0f6ad8;
+  background: #0f6ad8;
+  color: #ffffff;
+}
+
+.tw-hidden {
+  display: none;
+}

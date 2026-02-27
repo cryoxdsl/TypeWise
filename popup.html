@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TypeWise Orthographe IA</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <main class="popup">
+      <h1>TypeWise Orthographe IA</h1>
+
+      <label class="field">
+        <span>Clé API OpenAI</span>
+        <input id="apiKey" type="password" autocomplete="off" placeholder="sk-..." />
+      </label>
+
+      <label class="field">
+        <span>Langue cible</span>
+        <select id="language">
+          <option value="fr">Français</option>
+          <option value="en">English</option>
+          <option value="es">Español</option>
+          <option value="de">Deutsch</option>
+          <option value="it">Italiano</option>
+        </select>
+      </label>
+
+      <label class="toggle">
+        <input id="enabled" type="checkbox" />
+        <span>Activer l'extension</span>
+      </label>
+
+      <button id="saveBtn" type="button">Enregistrer</button>
+      <p id="status" class="status" aria-live="polite"></p>
+
+      <p class="notice">
+        Confidentialite: uniquement le texte selectionne (max 2000 caracteres) est envoye a une IA externe pour correction.
+      </p>
+    </main>
+
+    <script src="popup.js"></script>
+  </body>
+</html>

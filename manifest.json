@@ -1,0 +1,43 @@
+{
+  "manifest_version": 3,
+  "name": "TypeWise Orthographe IA",
+  "description": "Corrige l'orthographe d'un texte selectionne via l'API OpenAI.",
+  "version": "0.1.0",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "permissions": ["storage", "contextMenus", "activeTab"],
+  "host_permissions": ["https://api.openai.com/*"],
+  "background": {
+    "service_worker": "service_worker.js",
+    "type": "module"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "TypeWise Orthographe IA",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png"
+    }
+  },
+  "commands": {
+    "correct_spelling": {
+      "suggested_key": {
+        "default": "Alt+Shift+C",
+        "mac": "Command+Shift+C"
+      },
+      "description": "Corriger l'orthographe du texte selectionne"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content_script.js"],
+      "css": ["ui/overlay.css"],
+      "run_at": "document_idle"
+    }
+  ]
+}
